@@ -1,6 +1,8 @@
 {
   description = ''
-    A Flake for the whisper.cpp project
+    A server service designed to process voice inputs. The server receives audio data, passes it to 
+    the openai's whisper model, converts the voice input into textual data, and sends the resulting 
+    transcription back to the requester.
   '';
 
   inputs = {
