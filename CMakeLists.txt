@@ -8,7 +8,7 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 endif()
 
 project(
-  butler
+  wspserver
   VERSION 0.1.0
   LANGUAGES C CXX)
 
