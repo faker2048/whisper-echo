@@ -6,6 +6,17 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
     utils.url = "github:numtide/flake-utils";
+
+    vitalpkgs = {
+      url = "github:nixvital/vitalpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nixpackbox = {
+      url = "github:faker2048/NixPackBox";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs = { self, nixpkgs, ... }@inputs:
@@ -13,6 +24,10 @@
       let
         pkgs-dev = import nixpkgs {
           inherit system;
+          overlays = [
+            inputs.vitalpkgs.overlays.default
+            (self: super: { whisper-cpp-dev = inputs.nixpackbox.packages.${system}.whisper-cpp-dev; })
+          ];
         };
       in
       {
@@ -24,10 +39,16 @@
             name = "whisper";
 
             packages = with pkgs-dev; [
+              # tools for building
               llvmPackages_15.clang
               cmake
               cmakeCurses
-              openai-whisper-cpp
+
+              # deps
+              whisper-cpp-dev
+
+              # tools for development
+              vscode-include-fix
             ];
 
             shellHook = ''
