@@ -48,6 +48,7 @@
 
               # deps
               whisper-cpp-dev
+              spdlog
 
               # tools for development
               vscode-include-fix
