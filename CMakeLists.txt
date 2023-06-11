@@ -23,3 +23,4 @@ add_subdirectory(whisper_echo)
 
 find_package(spdlog REQUIRED)
 add_compile_definitions(SPDLOG_FMT_EXTERNAL)
+find_package(Drogon CONFIG REQUIRED)
