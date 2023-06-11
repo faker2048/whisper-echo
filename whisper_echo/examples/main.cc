@@ -1,8 +1,10 @@
 #include <iostream>
 
 #include "whisper.h"
+#include "whisper_echo/examples/whisper_params.h"
 
 int main(int argc, char** argv) {
-  std::cout << "Hello World!" << std::endl;
+  whisper::WhisperParams params(argc, argv);
+  params.PrintUsage();
   return 0;
 }
