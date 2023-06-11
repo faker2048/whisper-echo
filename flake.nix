@@ -49,6 +49,7 @@
               # deps
               whisper-cpp-dev
               spdlog
+              drogon
 
               # tools for development
               vscode-include-fix
