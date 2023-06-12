@@ -2,6 +2,8 @@
 
 #include <thread>
 
+#include "spdlog/spdlog.h"
+
 namespace whisper {
 
 WhisperParams::WhisperParams(int argc, char** argv)
@@ -37,10 +39,12 @@ WhisperParams::WhisperParams(int argc, char** argv)
     argvs.emplace_back(std::string(argv[i]));
   }
   if (!Parse()) {
+    spdlog::error("Failed to parse command line arguments");
+    exit(1);
   }
 }
 
-void WhisperParams::PrintUsage() {
+void WhisperParams::PrintUsage() const {
   // clang-format off
   fprintf(stderr, "\n");
   fprintf(stderr, "usage: %s [options] file0.wav file1.wav ...\n", argvs[0].c_str());
@@ -81,6 +85,7 @@ void WhisperParams::PrintUsage() {
 }
 
 bool WhisperParams::Parse() {
+  spdlog::info("Parsing command line arguments");
   // clang-format off
   int argc = argvs.size();
   for (int i = 1; i < argc; i++) {
@@ -130,7 +135,7 @@ bool WhisperParams::Parse() {
     else if (arg == "-m"    || arg == "--model")          { model          = argvs[++i]; }
     else if (arg == "-f"    || arg == "--file")           { fname_inp.emplace_back(argvs[++i]); }
     else {
-        fprintf(stderr, "error: unknown argument: %s\n", arg.c_str());
+        spdlog::error("Unknown argument: {}", arg);
         return false;
     }
   }

@@ -45,7 +45,7 @@ class WhisperParams {
 
   std::vector<std::string> argvs;
 
-  void PrintUsage();
+  void PrintUsage() const;
 
  private:
   bool Parse();
