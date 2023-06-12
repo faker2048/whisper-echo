@@ -39,3 +39,6 @@ build
 
 # Nix
 result
+
+# tmp
+tmp_code.*
