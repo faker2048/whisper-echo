@@ -1,5 +1,7 @@
 # whisper_echo
 
+:warning: **The project is currently under active development. Expect frequent updates and changes.**
+
 `whisper_echo` is a server service repository, tailored for voice-to-text transcription using the Whisper tool. The service takes in audio data, processes it through the Whisper system, and returns the corresponding text transcription. The service is implemented in C++, specifically designed for Nix environments.
 
 ## Getting Started
