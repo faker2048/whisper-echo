@@ -1,4 +1,5 @@
-#include "whisper_echo/examples/whisper_params.h"
+#include "whisper_echo/whisper_params.h"
+
 #include <thread>
 
 namespace whisper {
