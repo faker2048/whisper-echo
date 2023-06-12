@@ -1,4 +1,5 @@
 add_subdirectory(examples)
+add_subdirectory(websocket)
 
 add_library(whisper_params OBJECT whisper_params.cc)
 
