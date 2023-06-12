@@ -17,9 +17,9 @@ class WhisperContext {
 
   int RunFull(const std::vector<float>& audio_data, whisper_full_params wparams);
 
-  int GetNumberOfSegments();
+  int GetNumberOfSegments() const;
 
-  std::string_view GetSegmentText(int segment_index);
+  std::string_view GetSegmentText(int segment_index) const;
 
  private:
   struct whisper_context* ctx;
