@@ -17,10 +17,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-include_directories(${PROJECT_SOURCE_DIR})
-
-add_subdirectory(whisper_echo)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 find_package(spdlog REQUIRED)
 add_compile_definitions(SPDLOG_FMT_EXTERNAL)
 find_package(Drogon CONFIG REQUIRED)
+
+include_directories(${PROJECT_SOURCE_DIR})
+
+add_subdirectory(whisper_echo)
