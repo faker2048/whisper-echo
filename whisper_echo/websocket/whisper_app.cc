@@ -39,9 +39,11 @@ WhisperApp::WhisperApp(const Config& config) : config_(config) {
 }
 
 void WhisperApp::Run() {
+  spdlog::info("🛫 Starting whisper app on {}:{}", config_.host, config_.port);
   drogon::app()
       .setClientMaxWebSocketMessageSize(std::numeric_limits<size_t>::max())
-      .addListener(config_.host, config_.port);
+      .addListener(config_.host, config_.port)
+      .run();
 }
 
 }  // namespace whisper
