@@ -1,12 +1,12 @@
 // TODO: refactor this file
+#define DR_WAV_IMPLEMENTATION
 
 #include <filesystem>
 #include <iostream>
 
-#define DR_WAV_IMPLEMENTATION
-#include "dr_wav.h"  // TODO: move to third-party
 #include "spdlog/spdlog.h"
 #include "whisper.h"
+#include "whisper_echo/examples/cli/dr_wav.h"  // TODO: move to third-party
 #include "whisper_echo/whisper_context.h"
 #include "whisper_echo/whisper_params.h"
 
