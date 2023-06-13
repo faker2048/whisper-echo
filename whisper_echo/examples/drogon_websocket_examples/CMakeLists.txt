@@ -1,2 +1,5 @@
-add_executable(web_socket_chat web_socket_chat.cc)
-target_link_libraries(web_socket_chat PRIVATE Drogon::Drogon)
+add_executable(chat_server chat_server.cc)
+target_link_libraries(chat_server PRIVATE Drogon::Drogon)
+
+add_executable(chat_client chat_client.cc)
+target_link_libraries(chat_client PRIVATE Drogon::Drogon)
