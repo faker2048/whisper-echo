@@ -5,3 +5,7 @@ target_link_libraries(whisper_params PRIVATE spdlog::spdlog)
 
 add_library(whisper_context OBJECT whisper_context.cc)
 target_link_libraries(whisper_context PUBLIC whisper spdlog::spdlog)
+
+add_executable(whisper_echo whisper_echo.cc)
+target_link_libraries(whisper_echo PUBLIC whisper_app
+                                          whisper_websocket_controller)
