@@ -51,5 +51,12 @@ function(add_cmake_subdirectories)
   endforeach()
 endfunction()
 
+# Function to set the output directory of a target
+function(set_output_dir target_name output_dir)
+  set_target_properties(
+    ${target_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+                              ${CMAKE_BINARY_DIR}/${output_dir})
+endfunction()
+
 # Call the function to add CMake subdirectories
 add_cmake_subdirectories()
