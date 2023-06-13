@@ -1,5 +1,4 @@
-add_subdirectory(examples)
-add_subdirectory(websocket)
+add_cmake_subdirectories()
 
 add_library(whisper_params OBJECT whisper_params.cc)
 target_link_libraries(whisper_params PRIVATE spdlog::spdlog)
