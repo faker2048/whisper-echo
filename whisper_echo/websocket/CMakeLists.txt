@@ -1,1 +1,2 @@
-
+add_library(whisper_websocket_controller OBJECT whisper_websocket_controller.cc)
+target_link_libraries(whisper_websocket_controller PUBLIC spdlog::spdlog)
