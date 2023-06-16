@@ -9,10 +9,7 @@
 These instructions will guide you on how to clone, build, and test this project in your local Nix environment.
 
 ### Prerequisites
-
-- A C++ compiler supporting at least C++20.
 - [Nix package manager](https://nixos.org/download.html) installed and configured on your system.
-- CMake for building the project (version 3.17 or later).
 
 ### Installing Dependencies
 
