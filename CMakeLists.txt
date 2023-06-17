@@ -18,8 +18,6 @@ project(
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-# Define the output directory for the binaries
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Append the project's custom CMake module path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
@@ -30,6 +28,9 @@ find_package(spdlog REQUIRED)
 add_compile_definitions(SPDLOG_FMT_EXTERNAL)
 # Find the Drogon library
 find_package(Drogon CONFIG REQUIRED)
+
+find_package(GTest REQUIRED)
+include(GoogleTest)
 
 # Include the project's main directory
 include_directories(${PROJECT_SOURCE_DIR})
