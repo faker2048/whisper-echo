@@ -1,9 +1,9 @@
 add_cmake_subdirectories()
 
-add_library(whisper_params OBJECT whisper_params.cc)
+add_library(whisper_params STATIC whisper_params.cc)
 target_link_libraries(whisper_params PRIVATE spdlog::spdlog)
 
-add_library(whisper_context OBJECT whisper_context.cc)
+add_library(whisper_context STATIC whisper_context.cc)
 target_link_libraries(whisper_context PUBLIC whisper spdlog::spdlog)
 
 add_executable(whisper_echo whisper_echo.cc)

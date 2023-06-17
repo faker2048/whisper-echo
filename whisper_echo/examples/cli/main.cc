@@ -239,7 +239,7 @@ int main(int argc, char **argv) {
   WhisperParams params(argc, argv);
   check_files(params);
 
-  auto context = WhisperContext::FromFile(params.model);
+  WhisperContext context(params.model);
   auto wparams = get_whisper_full_params(params, &context);
 
   std::vector<float> pcmf32;                // mono-channel F32 PCM

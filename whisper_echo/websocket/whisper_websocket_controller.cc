@@ -6,6 +6,7 @@
 
 #include "spdlog/spdlog.h"
 #include "whisper_echo/utlis/id_generator.h"
+#include "whisper_echo/whisper_context.h"
 
 namespace whisper {
 
@@ -88,12 +89,20 @@ class ConnectionContext {
     audio_data_.insert(audio_data_.end(), audio_data.begin(), audio_data.end());
   }
 
+  void fresh() {
+    audio_data_.clear();
+  }
+
   inline std::string peer_addr() const {
     return peer_addr_;
   }
 
   inline int64_t session_id() const {
     return session_id_;
+  }
+
+  inline const std::vector<float> &audio_data() const {
+    return audio_data_;
   }
 
  private:
