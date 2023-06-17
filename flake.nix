@@ -51,6 +51,10 @@
               spdlog
               drogon
 
+              # deps for testing
+              gtest
+              gmock
+
               # tools for development
               vscode-include-fix
             ];
