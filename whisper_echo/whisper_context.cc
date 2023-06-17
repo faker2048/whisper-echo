@@ -6,13 +6,12 @@
 
 namespace whisper {
 
-WhisperContext WhisperContext::FromFile(const std::string& model_path) {
-  whisper_context* ctx = whisper_init_from_file(model_path.c_str());
+WhisperContext::WhisperContext(const std::string& model_path) {
+  whisper_context* ctx_ = whisper_init_from_file(model_path.c_str());
   if (ctx == nullptr) {
     spdlog::error("Failed to initialize whisper context");
     exit(1);
   }
-  return WhisperContext(ctx);
 }
 
 WhisperContext::WhisperContext(whisper_context* ctx) : ctx(ctx) {
