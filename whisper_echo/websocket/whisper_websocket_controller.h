@@ -19,6 +19,9 @@ class WhisperWebSocketController
   WS_PATH_ADD("/whisper", drogon::Get);
   WS_PATH_LIST_END
  private:
+  // conceal the actual type `WhisperContext` to avoid including the header file here. It
+  // makes compilation faster.
+  std::shared_ptr<void> whisper_context_;
 };
 
 }  // namespace whisper
