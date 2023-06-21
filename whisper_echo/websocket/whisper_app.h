@@ -32,7 +32,7 @@ class WhisperApp::Builder {
   Builder();
   ~Builder();
 
-  Builder& SetHost(const std::string& host);
+  Builder& Listen(const std::string& host);
   Builder& SetPort(int port);
 
   WhisperApp Build();

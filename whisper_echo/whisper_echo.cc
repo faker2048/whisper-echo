@@ -19,6 +19,6 @@ int main() {
   set_log_level();
 
   auto whisper_app =
-      whisper::WhisperApp::Builder().SetHost("127.0.0.1").SetPort(8008).Build();
+      whisper::WhisperApp::Builder().Listen("0.0.0.0").SetPort(8008).Build();
   whisper_app.Run();
 }

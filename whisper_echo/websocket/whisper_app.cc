@@ -18,7 +18,7 @@ WhisperApp::Builder::Builder() : config_(Config::Default()) {
 WhisperApp::Builder::~Builder() {
 }
 
-WhisperApp::Builder& WhisperApp::Builder::SetHost(const std::string& host) {
+WhisperApp::Builder& WhisperApp::Builder::Listen(const std::string& host) {
   config_.host = host;
   return *this;
 }
