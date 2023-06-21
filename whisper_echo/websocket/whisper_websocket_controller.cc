@@ -119,9 +119,11 @@ void WhisperWebSocketController::handleNewMessage(
   auto conn_ctx               = ws_conn->getContext<ConnectionContext>();
 
   if (message_obj.type == MessageType::Start) {
-    // TODO: Start a new session.
     ws_conn->send("start confirmed");
   } else if (message_obj.type == MessageType::End) {
+    WhisperContextSingleton::GetSingletonInstance().Instance()->RunFull(
+        conn_ctx->audio_data(), whisper_full_params{});
+    conn_ctx->fresh();
     ws_conn->send("end confirmed");
   } else if (message_obj.type == MessageType::Data) {
     conn_ctx->AppendAudioData(message_obj.audio_float_vector);
