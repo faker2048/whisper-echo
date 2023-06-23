@@ -30,6 +30,7 @@ enum class MessageType {
 };
 
 MessageType FromString(std::string_view str) {
+  spdlog::info("Message type: {}", str);
   if (str == "start") {
     return MessageType::Start;
   } else if (str == "end") {
@@ -48,13 +49,15 @@ struct MessageMetadata {
   int sequence_number;
 
   // "type_str|seq_str|binary_audiodata"
-  static MessageMetadata FromBinaryString(std::string &&str) {
+  static MessageMetadata FromMessageString(std::string &&str) {
     MessageMetadata ret{
         .type         = MessageType::Unknown,
         .original_str = std::move(str),
     };
 
+    size_t n                  = ret.original_str.size();
     size_t i                  = ret.original_str.find_first_of('|');
+    i                         = std::min(i, n);
     std::string_view type_str = std::string_view{ret.original_str.data(), i};
     ret.type                  = FromString(type_str);
     if (ret.type != MessageType::Data) {
@@ -66,8 +69,8 @@ struct MessageMetadata {
         std::string_view{ret.original_str.data() + i + 1, j - i - 1};
     ret.sequence_number = std::stoi(seq_str.data());
 
-    std::string_view data_str = std::string_view{ret.original_str.data() + j + 1,
-                                                 ret.original_str.size() - j - 1};
+    std::string_view data_str =
+        std::string_view{ret.original_str.data() + j + 1, n - j - 1};
 
     if (ret.type == MessageType::Data) {
       ret.audio_float_vector =
@@ -105,6 +108,10 @@ class ConnectionContext {
     return audio_data_;
   }
 
+  ~ConnectionContext() {
+    spdlog::info("ConnectionContext {} destroyed", session_id_);
+  }
+
  private:
   std::string peer_addr_;
   int64_t session_id_;
@@ -115,7 +122,7 @@ void WhisperWebSocketController::handleNewMessage(
     const drogon::WebSocketConnectionPtr &ws_conn,
     std::string &&message,
     const drogon::WebSocketMessageType &type) {
-  MessageMetadata message_obj = MessageMetadata::FromBinaryString(std::move(message));
+  MessageMetadata message_obj = MessageMetadata::FromMessageString(std::move(message));
   auto conn_ctx               = ws_conn->getContext<ConnectionContext>();
 
   if (message_obj.type == MessageType::Start) {
@@ -128,6 +135,8 @@ void WhisperWebSocketController::handleNewMessage(
   } else if (message_obj.type == MessageType::Data) {
     conn_ctx->AppendAudioData(message_obj.audio_float_vector);
     ws_conn->send(fmt::format("data confirmed|seq {}", message_obj.sequence_number));
+  } else {
+    ws_conn->send("unknown message type");
   }
 }
 
