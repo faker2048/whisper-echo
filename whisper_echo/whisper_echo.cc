@@ -4,6 +4,7 @@
 #include "spdlog/spdlog.h"
 #include "whisper_echo/websocket/whisper_app.h"
 #include "whisper_echo/websocket/whisper_websocket_controller.h"
+#include "whisper_echo/whisper_context.h"
 
 // set log level debug
 void set_log_level() {
@@ -17,8 +18,6 @@ void set_log_level() {
 
 int main() {
   set_log_level();
-
-  auto whisper_app =
-      whisper::WhisperApp::Builder().Listen("0.0.0.0").SetPort(8008).Build();
-  whisper_app.Run();
+  whisper::WhisperContextSingleton::GetSingletonInstance().Init("ggml-base.en.bin");
+  whisper::WhisperApp::Builder().Listen("0.0.0.0").SetPort(8008).Build().Run();
 }
