@@ -25,7 +25,7 @@ class WhisperContext {
   std::string_view GetSegmentText(int segment_index) const;
 
  private:
-  struct whisper_context* ctx = nullptr;
+  struct whisper_context* ctx_ = nullptr;
 };
 
 using WhisperContextSingleton = Singleton<WhisperContext>;
