@@ -16,21 +16,42 @@ using drogon::WebSocketMessageType;
 
 constexpr int kSimpleRate = 16000;
 
-struct MessageMetadata {
+class MessageMetadata {
+ public:
   std::string type_str;           // "start", "end", "data" TODO: use enum
   int sequence_number;            // 0, 1, 2, 3, ...
   std::vector<float> audio_data;  // 16000 samples per second
 
-  MSGPACK_DEFINE(type_str, sequence_number, audio_data);
+  // Decode function
+  void decode(msgpack::object const &o) {
+    if (o.type != msgpack::type::MAP) throw msgpack::type_error();
+
+    for (size_t i = 0; i < o.via.map.size; ++i) {
+      msgpack::object_kv &kv = o.via.map.ptr[i];
+      std::string key        = kv.key.as<std::string>();
+      if (key == "type_str") {
+        type_str = kv.val.as<std::string>();
+      } else if (key == "sequence_number") {
+        sequence_number = kv.val.as<int>();
+      } else if (key == "audio_data") {
+        const auto &raw_data = kv.val.as<std::vector<char>>();
+        audio_data.resize(raw_data.size() / sizeof(float));
+        std::memcpy(audio_data.data(), raw_data.data(), raw_data.size());
+      }
+    }
+  }
+
+ private:
+  std::string raw;  // just take the ownership of the message
 };
 
 struct MessageResponse {
-  std::string type_str;  // "start", "end", "data" TODO: use enum
-  int sequence_number;   // 0, 1, 2, 3, ...
-  bool success;
-  std::string error_message;
+  std::string type_str      = "unkown";  // "start", "end", "data" TODO: use enum
+  int sequence_number       = -1;        // 0, 1, 2, 3, ...
+  bool success              = false;
+  std::string error_message = "";
 
-  MSGPACK_DEFINE(type_str, sequence_number, success, error_message);
+  MSGPACK_DEFINE_MAP(type_str, sequence_number, success, error_message);
 };
 
 template <typename T>
@@ -65,8 +86,19 @@ struct ConnectionContext {
 void WhisperWebSocketController::handleNewMessage(const WebSocketConnectionPtr &ws_conn,
                                                   std::string &&message,
                                                   const WebSocketMessageType &type) {
-  MessageMetadata message_obj =
-      msgpack::unpack(message.data(), message.size()).get().as<MessageMetadata>();
+  spdlog::info("handleNewMessage, message size: {} Byte", message.size());
+  MessageMetadata message_obj;
+
+  try {
+    msgpack::object_handle oh    = msgpack::unpack(message.data(), message.size());
+    msgpack::object deserialized = oh.get();
+    std::cout << "deserialized: " << deserialized << std::endl;
+    message_obj.decode(deserialized);
+  } catch (const std::exception &e) {
+    ws_conn->send(fmt::format("Failed to parse message, e.what(): {}", e.what()));
+    ws_conn->forceClose();
+    return;
+  }
   auto conn_ctx = ws_conn->getContext<ConnectionContext>();
 
   MessageResponse response;
@@ -77,9 +109,12 @@ void WhisperWebSocketController::handleNewMessage(const WebSocketConnectionPtr &
     conn_ctx->reset();
   } else if (message_obj.type_str == "end") {
     WhisperContextSingleton::GetSingletonInstance().Instance()->RunFull(
-        conn_ctx->audio_data, whisper_full_params{});
+        conn_ctx->audio_data, whisper_full_params{});  // TODO: use real params
     conn_ctx->reset();
   } else if (message_obj.type_str == "data") {
+    spdlog::debug("Received audio data, sequence_number: {}, audio_len: {} s",
+                  message_obj.sequence_number,
+                  message_obj.audio_data.size() / kSimpleRate);
     conn_ctx->AppendAudioData(message_obj.audio_data);
     response.sequence_number = message_obj.sequence_number;
   } else {
