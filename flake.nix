@@ -48,7 +48,7 @@
               gmock
 
               # tools for development
-              (python3.withPackages (ps: with ps; [ websockets black librosa ]))
+              (python3.withPackages (ps: with ps; [ websockets black librosa msgpack ]))
             ];
 
             shellHook = ''
