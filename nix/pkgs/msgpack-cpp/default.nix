@@ -1,12 +1,18 @@
-{ callPackage, fetchFromGitHub, ... } @ args:
+{ llvmPackages_15, cmake, fetchFromGitHub }:
 
-callPackage ./generic.nix (args // rec {
-  version = "3.3.0";
+llvmPackages_15.stdenv.mkDerivation rec {
+  pname = "msgpack-c";
+
+  version = "6.0.0";
 
   src = fetchFromGitHub {
-    owner  = "msgpack";
-    repo   = "msgpack-c";
-    rev    = "cpp-${version}";
-    sha256 = "02dxgzxlwn8g9ca2j4m0rjvdq1k2iciy6ickj615daz5w8pcjajd";
+    owner = "msgpack";
+    repo = pname;
+    rev = "cpp-${version}";
+    sha256 = "sha256-Qea9zGLJ41D+l8h1Sg/KJI6Ou02jtbRIxYPGoabM8nY=";
   };
-})
+
+  nativeBuildInputs = [ cmake ];
+
+  cmakeFlags = [ ];
+}
