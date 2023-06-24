@@ -40,41 +40,26 @@ void SendObject(const WebSocketConnectionPtr &ws_conn, const T &obj) {
   ws_conn->send(sbuf.data(), sbuf.size(), WebSocketMessageType::Binary);
 }
 
-class ConnectionContext {
- public:
+struct ConnectionContext {
+  std::string peer_addr;
+  int64_t session_id;
+  std::vector<float> audio_data;
+
   ConnectionContext(std::string peer_addr)
-      : peer_addr_(std::move(peer_addr)),
-        session_id_(TimestampIDGenerator::GenerateId()) {
+      : peer_addr(std::move(peer_addr)), session_id(TimestampIDGenerator::GenerateId()) {
   }
 
-  void AppendAudioData(std::span<const float> audio_data) {
-    audio_data_.insert(audio_data_.end(), audio_data.begin(), audio_data.end());
+  void AppendAudioData(std::span<const float> seg) {
+    audio_data.insert(audio_data.end(), seg.begin(), seg.end());
   }
 
   void reset() {
-    audio_data_.clear();
-  }
-
-  inline std::string peer_addr() const {
-    return peer_addr_;
-  }
-
-  inline int64_t session_id() const {
-    return session_id_;
-  }
-
-  inline const std::vector<float> &audio_data() const {
-    return audio_data_;
+    audio_data.clear();
   }
 
   ~ConnectionContext() {
-    spdlog::info("ConnectionContext {} destroyed", session_id_);
+    spdlog::info("ConnectionContext {} destroyed", session_id);
   }
-
- private:
-  std::string peer_addr_;
-  int64_t session_id_;
-  std::vector<float> audio_data_;
 };
 
 void WhisperWebSocketController::handleNewMessage(const WebSocketConnectionPtr &ws_conn,
@@ -92,7 +77,7 @@ void WhisperWebSocketController::handleNewMessage(const WebSocketConnectionPtr &
     conn_ctx->reset();
   } else if (message_obj.type_str == "end") {
     WhisperContextSingleton::GetSingletonInstance().Instance()->RunFull(
-        conn_ctx->audio_data(), whisper_full_params{});
+        conn_ctx->audio_data, whisper_full_params{});
     conn_ctx->reset();
   } else if (message_obj.type_str == "data") {
     conn_ctx->AppendAudioData(message_obj.audio_data);
@@ -109,7 +94,7 @@ void WhisperWebSocketController::handleConnectionClosed(
     const WebSocketConnectionPtr &conn) {
   auto conn_ctx = conn->getContext<ConnectionContext>();
   spdlog::debug("WebSocket closed by {}",
-                conn_ctx ? conn_ctx->peer_addr() : "unknown peer");
+                conn_ctx ? conn_ctx->peer_addr : "unknown peer");
 }
 
 void WhisperWebSocketController::handleNewConnection(const drogon::HttpRequestPtr &req,
