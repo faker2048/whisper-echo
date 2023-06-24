@@ -16,7 +16,10 @@
         pkgs-dev = import nixpkgs {
           inherit system;
           overlays = [
-            (self: super: { whisper-cpp-dev = self.callPackage ./nix/pkgs/whisper-cpp-dev { }; })
+            (self: super: {
+              whisper-cpp-dev = self.callPackage ./nix/pkgs/whisper-cpp-dev { };
+              msgpack-cpp = self.callPackage ./nix/pkgs/msgpack-cpp { };
+            })
           ];
         };
       in
@@ -36,6 +39,7 @@
 
               # deps
               whisper-cpp-dev
+              msgpack-cpp
               spdlog
               drogon
 
