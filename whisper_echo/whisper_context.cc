@@ -3,8 +3,11 @@
 #include <iostream>
 
 #include "spdlog/spdlog.h"
+#include "whisper_echo/utlis/scope_timer.h"
 
 namespace whisper {
+
+using ScoopTimer = utlis::ScopeTimer<[](std::string_view s) { spdlog::info(s); }>;
 
 WhisperContext::WhisperContext(const std::string& model_path) {
   ctx_ = whisper_init_from_file(model_path.c_str());
@@ -23,6 +26,9 @@ WhisperContext::~WhisperContext() {
 
 int WhisperContext::RunFull(const std::vector<float>& audio_data,
                             whisper_full_params wparams) {
+  ScoopTimer timer("WhisperContext::RunFull");
+
+  spdlog::info("Running whisper_full, audio_data.size() = {}", audio_data.size());
   int ret = whisper_full(ctx_, wparams, audio_data.data(), audio_data.size());
   if (ret != 0) {
     spdlog::critical("Failed to run whisper_full");

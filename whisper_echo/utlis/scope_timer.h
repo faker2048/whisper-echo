@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string_view>
 
-namespace whisper {
+namespace whisper::utlis {
 
 template <void (*log_fun)(std::string_view) = nullptr>
 class ScopeTimer {
