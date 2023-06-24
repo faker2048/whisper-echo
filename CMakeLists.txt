@@ -32,6 +32,9 @@ find_package(Drogon CONFIG REQUIRED)
 find_package(GTest REQUIRED)
 include(GoogleTest)
 
+find_package(msgpack-cxx CONFIG REQUIRED)
+add_compile_definitions(MSGPACK_USE_BOOST=0 MSGPACK_CXX20=1)
+
 # Include the project's main directory
 include_directories(${PROJECT_SOURCE_DIR})
 

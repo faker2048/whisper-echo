@@ -4,72 +4,41 @@
 #include <memory>
 #include <span>
 
+#include "msgpack.hpp"
 #include "spdlog/spdlog.h"
 #include "whisper_echo/utlis/id_generator.h"
 #include "whisper_echo/whisper_context.h"
 
 namespace whisper {
 
+using drogon::WebSocketConnectionPtr;
+using drogon::WebSocketMessageType;
+
 constexpr int kSimpleRate = 16000;
 
-enum class MessageType {
-  Unknown,
-  Start,
-  End,
-  Data,
-};
-
-MessageType FromString(std::string_view str) {
-  spdlog::info("Message type: {}", str);
-  if (str == "start") {
-    return MessageType::Start;
-  } else if (str == "end") {
-    return MessageType::End;
-  } else if (str == "data") {
-    return MessageType::Data;
-  } else {
-    return MessageType::Unknown;
-  }
-}
-
 struct MessageMetadata {
-  MessageType type;
-  std::string original_str;
-  std::span<const float> audio_float_vector;
-  int sequence_number;
+  std::string type_str;           // "start", "end", "data" TODO: use enum
+  int sequence_number;            // 0, 1, 2, 3, ...
+  std::vector<float> audio_data;  // 16000 samples per second
 
-  // "type_str|seq_str|binary_audiodata"
-  static MessageMetadata FromMessageString(std::string &&str) {
-    MessageMetadata ret{
-        .type         = MessageType::Unknown,
-        .original_str = std::move(str),
-    };
-
-    size_t n                  = ret.original_str.size();
-    size_t i                  = ret.original_str.find_first_of('|');
-    i                         = std::min(i, n);
-    std::string_view type_str = std::string_view{ret.original_str.data(), i};
-    ret.type                  = FromString(type_str);
-    if (ret.type != MessageType::Data) {
-      return ret;
-    }
-
-    size_t j = ret.original_str.find_first_of('|', i + 1);
-    std::string_view seq_str =
-        std::string_view{ret.original_str.data() + i + 1, j - i - 1};
-    ret.sequence_number = std::stoi(seq_str.data());
-
-    std::string_view data_str =
-        std::string_view{ret.original_str.data() + j + 1, n - j - 1};
-
-    if (ret.type == MessageType::Data) {
-      ret.audio_float_vector =
-          std::span<const float>{reinterpret_cast<const float *>(data_str.data()),
-                                 data_str.size() / sizeof(float)};
-    }
-    return ret;
-  }
+  MSGPACK_DEFINE(type_str, sequence_number, audio_data);
 };
+
+struct MessageResponse {
+  std::string type_str;  // "start", "end", "data" TODO: use enum
+  int sequence_number;   // 0, 1, 2, 3, ...
+  bool success;
+  std::string error_message;
+
+  MSGPACK_DEFINE(type_str, sequence_number, success, error_message);
+};
+
+template <typename T>
+void SendObject(const WebSocketConnectionPtr &ws_conn, const T &obj) {
+  msgpack::sbuffer sbuf;
+  msgpack::pack(sbuf, obj);
+  ws_conn->send(sbuf.data(), sbuf.size(), WebSocketMessageType::Binary);
+}
 
 class ConnectionContext {
  public:
@@ -82,7 +51,7 @@ class ConnectionContext {
     audio_data_.insert(audio_data_.end(), audio_data.begin(), audio_data.end());
   }
 
-  void fresh() {
+  void reset() {
     audio_data_.clear();
   }
 
@@ -108,37 +77,43 @@ class ConnectionContext {
   std::vector<float> audio_data_;
 };
 
-void WhisperWebSocketController::handleNewMessage(
-    const drogon::WebSocketConnectionPtr &ws_conn,
-    std::string &&message,
-    const drogon::WebSocketMessageType &type) {
-  MessageMetadata message_obj = MessageMetadata::FromMessageString(std::move(message));
-  auto conn_ctx               = ws_conn->getContext<ConnectionContext>();
+void WhisperWebSocketController::handleNewMessage(const WebSocketConnectionPtr &ws_conn,
+                                                  std::string &&message,
+                                                  const WebSocketMessageType &type) {
+  MessageMetadata message_obj =
+      msgpack::unpack(message.data(), message.size()).get().as<MessageMetadata>();
+  auto conn_ctx = ws_conn->getContext<ConnectionContext>();
 
-  if (message_obj.type == MessageType::Start) {
-    ws_conn->send("start confirmed");
-  } else if (message_obj.type == MessageType::End) {
+  MessageResponse response;
+  response.type_str = message_obj.type_str;
+  response.success  = true;
+
+  if (message_obj.type_str == "start") {
+    conn_ctx->reset();
+  } else if (message_obj.type_str == "end") {
     WhisperContextSingleton::GetSingletonInstance().Instance()->RunFull(
         conn_ctx->audio_data(), whisper_full_params{});
-    conn_ctx->fresh();
-    ws_conn->send("end confirmed");
-  } else if (message_obj.type == MessageType::Data) {
-    conn_ctx->AppendAudioData(message_obj.audio_float_vector);
-    ws_conn->send(fmt::format("data confirmed|seq {}", message_obj.sequence_number));
+    conn_ctx->reset();
+  } else if (message_obj.type_str == "data") {
+    conn_ctx->AppendAudioData(message_obj.audio_data);
+    response.sequence_number = message_obj.sequence_number;
   } else {
-    ws_conn->send("unknown message type");
+    response.success       = false;
+    response.error_message = "unknown message type";
   }
+
+  SendObject(ws_conn, response);
 }
 
 void WhisperWebSocketController::handleConnectionClosed(
-    const drogon::WebSocketConnectionPtr &conn) {
+    const WebSocketConnectionPtr &conn) {
   auto conn_ctx = conn->getContext<ConnectionContext>();
   spdlog::debug("WebSocket closed by {}",
                 conn_ctx ? conn_ctx->peer_addr() : "unknown peer");
 }
 
-void WhisperWebSocketController::handleNewConnection(
-    const drogon::HttpRequestPtr &req, const drogon::WebSocketConnectionPtr &conn) {
+void WhisperWebSocketController::handleNewConnection(const drogon::HttpRequestPtr &req,
+                                                     const WebSocketConnectionPtr &conn) {
   spdlog::debug("New WebSocket connection!");
 
   auto conn_ctx = std::make_shared<ConnectionContext>(conn->peerAddr().toIpPort());
