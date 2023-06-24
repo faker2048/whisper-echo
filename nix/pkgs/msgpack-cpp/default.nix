@@ -9,10 +9,13 @@ llvmPackages_15.stdenv.mkDerivation rec {
     owner = "msgpack";
     repo = pname;
     rev = "cpp-${version}";
-    sha256 = "sha256-Qea9zGLJ41D+l8h1Sg/KJI6Ou02jtbRIxYPGoabM8nY=";
+    sha256 = "sha256-p0eLd0fHhsgnRomubYadumMNiC2itdePJC9B55m49LI=";
   };
 
   nativeBuildInputs = [ cmake ];
 
-  cmakeFlags = [ ];
+  cmakeFlags = [
+    "-DMSGPACK_USE_BOOST=OFF"
+    "-DMSGPACK_CXX20=ON"
+  ];
 }

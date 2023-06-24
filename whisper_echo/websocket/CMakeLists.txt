@@ -1,7 +1,7 @@
 add_library(whisper_websocket_controller STATIC whisper_websocket_controller.cc)
 target_link_libraries(
   whisper_websocket_controller PUBLIC spdlog::spdlog Drogon::Drogon
-                                      id_generator whisper_context)
+                                      id_generator whisper_context msgpack-cxx)
 
 add_library(whisper_app STATIC whisper_app.cc)
 target_link_libraries(whisper_app PUBLIC whisper_websocket_controller
