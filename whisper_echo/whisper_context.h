@@ -10,6 +10,11 @@ namespace whisper {
 
 class WhisperContext {
  public:
+  struct Segment {
+    std::string_view text;
+    int64_t start_time;
+    int64_t end_time;
+  };
   explicit WhisperContext(struct whisper_context* ctx);
   WhisperContext(const std::string& model_path);
 
@@ -23,6 +28,8 @@ class WhisperContext {
   int GetNumberOfSegments() const;
 
   std::string_view GetSegmentText(int segment_index) const;
+
+  std::vector<Segment> GetSegments() const;
 
  private:
   struct whisper_context* ctx_ = nullptr;

@@ -46,4 +46,17 @@ std::string_view WhisperContext::GetSegmentText(int segment_index) const {
   return std::string_view(text);
 }
 
+std::vector<WhisperContext::Segment> WhisperContext::GetSegments() const {
+  std::vector<Segment> segments;
+  const int n_segments = whisper_full_n_segments(ctx_);
+  segments.reserve(n_segments);
+  for (int i = 0; i < n_segments; i++) {
+    const char* text   = whisper_full_get_segment_text(ctx_, i);
+    int64_t start_time = whisper_full_get_segment_t0(ctx_, i);
+    int64_t end_time   = whisper_full_get_segment_t1(ctx_, i);
+    segments.push_back({std::string_view(text), start_time, end_time});
+  }
+  return segments;
+}
+
 }  // namespace whisper
