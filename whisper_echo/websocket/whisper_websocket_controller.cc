@@ -40,9 +40,6 @@ class MessageMetadata {
       }
     }
   }
-
- private:
-  std::string raw;  // just take the ownership of the message
 };
 
 struct MessageResponse {
