@@ -48,8 +48,9 @@ struct MessageResponse {
   int sequence_number  = -1;        // 0, 1, 2, 3, ...
   bool success         = false;
   std::string message  = "";
+  std::vector<std::tuple<int64_t, int64_t, std::string>> results;
 
-  MSGPACK_DEFINE_MAP(type_str, sequence_number, success, message);
+  MSGPACK_DEFINE_MAP(type_str, sequence_number, success, message, results);
 };
 
 template <typename T>
@@ -110,9 +111,11 @@ void WhisperWebSocketController::handleNewMessage(const WebSocketConnectionPtr &
     auto full_params             = GetWhisperFullParams(params);
     auto whisper_context = WhisperContextSingleton::GetSingletonInstance().Instance();
     whisper_context->RunFull(conn_ctx->audio_data, full_params);  // TODO: use real params
-    response.message = whisper_context->GetFullText();
+    auto segments = whisper_context->GetSegments();
+    for (const auto &seg : segments) {
+      response.results.emplace_back(seg.start_time, seg.end_time, seg.text);
+    }
     conn_ctx->reset();
-
   } else if (message_obj.type_str == "data") {
     auto info =
         fmt::format("Received audio data, sequence_number: {}, audio_len: {:.3f} s",

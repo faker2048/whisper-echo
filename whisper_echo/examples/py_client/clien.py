@@ -65,7 +65,7 @@ class WhisperWebsocketClient:
 
     async def send_start(self):
         # use msgpack
-        msg = self.create_message("start", -1, np.array([1, 2], np.float32).tobytes())
+        msg = self.create_message("start")
         ret = await self.client.send_and_recv(msg)
         print(ret)
 
@@ -101,7 +101,13 @@ async def amain():
     await client.connect()
     await client.send_start()
     audio = read_audio_file(args.file)
-    await client.send_data(0, audio)
+    # split into 4 chunks, just for demo. You can split into any number
+    # of chunks or send the whole audio at once
+    chunk_size = len(audio) // 4
+    await client.send_data(0, audio[:chunk_size])
+    await client.send_data(1, audio[chunk_size : 2 * chunk_size])
+    await client.send_data(2, audio[2 * chunk_size : 3 * chunk_size])
+    await client.send_data(3, audio[3 * chunk_size :])
     await client.send_end()
 
 
