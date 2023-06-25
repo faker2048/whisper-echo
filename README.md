@@ -39,6 +39,10 @@ Upon successful build, the resulting binary can be found in the `build` director
 
 Instead `./models/ggml-base.en.bin` use your own model_path
 
+### Client
+
+Here is a usable Python version of the client example. Run `nix develop` to enter the Python environment, and then execute `python ./whisper_echo/examples/py_client/client.py --file path/to/your_audio.wav`.
+
 ## Running the tests
 
 TODO
