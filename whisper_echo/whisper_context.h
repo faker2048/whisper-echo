@@ -31,6 +31,8 @@ class WhisperContext {
 
   std::vector<Segment> GetSegments() const;
 
+  std::string GetFullText() const;
+
  private:
   struct whisper_context* ctx_ = nullptr;
 };

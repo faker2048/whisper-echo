@@ -44,12 +44,12 @@ class MessageMetadata {
 };
 
 struct MessageResponse {
-  std::string type_str      = "unkown";  // "start", "end", "data" TODO: use enum
-  int sequence_number       = -1;        // 0, 1, 2, 3, ...
-  bool success              = false;
-  std::string error_message = "";
+  std::string type_str = "unkown";  // "start", "end", "data" TODO: use enum
+  int sequence_number  = -1;        // 0, 1, 2, 3, ...
+  bool success         = false;
+  std::string message  = "";
 
-  MSGPACK_DEFINE_MAP(type_str, sequence_number, success, error_message);
+  MSGPACK_DEFINE_MAP(type_str, sequence_number, success, message);
 };
 
 template <typename T>
@@ -108,19 +108,23 @@ void WhisperWebSocketController::handleNewMessage(const WebSocketConnectionPtr &
   } else if (message_obj.type_str == "end") {
     WhisperAppModelParams params = WhisperAppModelParams::Defualt();
     auto full_params             = GetWhisperFullParams(params);
-    WhisperContextSingleton::GetSingletonInstance().Instance()->RunFull(
-        conn_ctx->audio_data, full_params);  // TODO: use real params
+    auto whisper_context = WhisperContextSingleton::GetSingletonInstance().Instance();
+    whisper_context->RunFull(conn_ctx->audio_data, full_params);  // TODO: use real params
+    response.message = whisper_context->GetFullText();
     conn_ctx->reset();
 
   } else if (message_obj.type_str == "data") {
-    spdlog::debug("Received audio data, sequence_number: {}, audio_len: {} s",
-                  message_obj.sequence_number,
-                  message_obj.audio_data.size() / kSimpleRate);
+    auto info =
+        fmt::format("Received audio data, sequence_number: {}, audio_len: {:.3f} s",
+                    message_obj.sequence_number,
+                    1.0 * message_obj.audio_data.size() / kSimpleRate);
+    spdlog::debug(info);
     conn_ctx->AppendAudioData(message_obj.audio_data);
     response.sequence_number = message_obj.sequence_number;
+    response.message         = info;
   } else {
-    response.success       = false;
-    response.error_message = "unknown message type";
+    response.success = false;
+    response.message = "unknown message type";
   }
 
   SendObject(ws_conn, response);

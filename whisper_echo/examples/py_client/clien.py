@@ -65,15 +65,13 @@ class WhisperWebsocketClient:
         # use msgpack
         msg = self.create_message("start", -1, np.array([1, 2], np.float32).tobytes())
         ret = await self.client.send_and_recv(msg)
-        if ret["success"]:
-            print("start success")
+        print(ret)
 
     async def send_end(self):
         # use msgpack
         msg = self.create_message("end")
         ret = await self.client.send_and_recv(msg)
-        if ret["success"]:
-            print("end success")
+        print(ret)
 
     async def send_data(self, sequence_number: int, audio_data: bytes | np.ndarray):
         # use msgpack
@@ -81,8 +79,7 @@ class WhisperWebsocketClient:
             audio_data = audio_data.tobytes()
         msg = self.create_message("data", sequence_number, audio_data)
         ret = await self.client.send_and_recv(msg)
-        if ret["success"]:
-            print("data success")
+        print(ret)
 
     async def audio2text(self, audio: np.ndarray):
         pass

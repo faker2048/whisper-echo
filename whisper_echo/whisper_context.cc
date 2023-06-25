@@ -59,4 +59,12 @@ std::vector<WhisperContext::Segment> WhisperContext::GetSegments() const {
   return segments;
 }
 
+std::string WhisperContext::GetFullText() const {
+  std::string text;
+  for (const auto& segment : GetSegments()) {
+    text += segment.text;
+  }
+  return text;
+}
+
 }  // namespace whisper
