@@ -7,11 +7,11 @@
 #include "spdlog/spdlog.h"
 #include "whisper.h"
 #include "whisper_echo/examples/cli/dr_wav.h"  // TODO: move to third-party
+#include "whisper_echo/examples/cli/whisper_command_line_params.h"
 #include "whisper_echo/whisper_context.h"
-#include "whisper_echo/whisper_params.h"
 
+using whisper::WhisperCommandLineParams;
 using whisper::WhisperContext;
-using whisper::WhisperParams;
 
 constexpr int COMMON_SAMPLE_RATE = 16000;
 
@@ -154,7 +154,7 @@ void whisper_print_segment_callback(struct whisper_context *,
   }
 }
 
-whisper_full_params get_whisper_full_params(const WhisperParams &params,
+whisper_full_params get_whisper_full_params(const WhisperCommandLineParams &params,
                                             WhisperContext *ctx) {
   whisper_full_params wparams = whisper_full_default_params(WHISPER_SAMPLING_GREEDY);
 
@@ -215,7 +215,7 @@ whisper_full_params get_whisper_full_params(const WhisperParams &params,
   return wparams;
 }
 
-void check_files(const WhisperParams &params) {
+void check_files(const WhisperCommandLineParams &params) {
   if (params.fname_inp.empty()) {
     params.PrintUsage();
     spdlog::critical("no input file specified");
@@ -236,7 +236,7 @@ void check_files(const WhisperParams &params) {
 }
 
 int main(int argc, char **argv) {
-  WhisperParams params(argc, argv);
+  WhisperCommandLineParams params(argc, argv);
   check_files(params);
 
   WhisperContext context(params.model);

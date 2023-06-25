@@ -1,4 +1,4 @@
-#include "whisper_echo/whisper_params.h"
+#include "whisper_echo/examples/cli/whisper_command_line_params.h"
 
 #include <thread>
 
@@ -6,7 +6,7 @@
 
 namespace whisper {
 
-WhisperParams::WhisperParams(int argc, char** argv)
+WhisperCommandLineParams::WhisperCommandLineParams(int argc, char** argv)
     : n_threads(std::min(4, (int32_t)std::thread::hardware_concurrency())),
       n_processors(1),
       offset_t_ms(0),
@@ -44,7 +44,7 @@ WhisperParams::WhisperParams(int argc, char** argv)
   }
 }
 
-void WhisperParams::PrintUsage() const {
+void WhisperCommandLineParams::PrintUsage() const {
   // clang-format off
   fprintf(stderr, "\n");
   fprintf(stderr, "usage: %s [options] file0.wav file1.wav ...\n", argvs[0].c_str());
@@ -84,7 +84,7 @@ void WhisperParams::PrintUsage() const {
   // clang-format on
 }
 
-bool WhisperParams::Parse() {
+bool WhisperCommandLineParams::Parse() {
   spdlog::info("Parsing command line arguments");
   // clang-format off
   int argc = argvs.size();

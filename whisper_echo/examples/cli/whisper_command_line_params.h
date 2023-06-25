@@ -5,9 +5,9 @@
 
 namespace whisper {
 
-class WhisperParams {
+class WhisperCommandLineParams {
  public:
-  WhisperParams(int argc, char** argv);
+  WhisperCommandLineParams(int argc, char** argv);
 
   int32_t n_threads;
   int32_t n_processors;
