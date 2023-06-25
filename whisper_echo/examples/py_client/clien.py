@@ -1,3 +1,5 @@
+# Usage: python client.py --file test.wav --host localhost --port 8008
+
 import asyncio
 import numpy as np
 import websockets
