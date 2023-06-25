@@ -7,6 +7,7 @@
 #include "msgpack.hpp"
 #include "spdlog/spdlog.h"
 #include "whisper_echo/utlis/id_generator.h"
+#include "whisper_echo/websocket/whisper_app_model_params.h"
 #include "whisper_echo/whisper_context.h"
 
 namespace whisper {
@@ -105,9 +106,12 @@ void WhisperWebSocketController::handleNewMessage(const WebSocketConnectionPtr &
   if (message_obj.type_str == "start") {
     conn_ctx->reset();
   } else if (message_obj.type_str == "end") {
+    WhisperAppModelParams params = WhisperAppModelParams::Defualt();
+    auto full_params             = GetWhisperFullParams(params);
     WhisperContextSingleton::GetSingletonInstance().Instance()->RunFull(
-        conn_ctx->audio_data, whisper_full_params{});  // TODO: use real params
+        conn_ctx->audio_data, full_params);  // TODO: use real params
     conn_ctx->reset();
+
   } else if (message_obj.type_str == "data") {
     spdlog::debug("Received audio data, sequence_number: {}, audio_len: {} s",
                   message_obj.sequence_number,
