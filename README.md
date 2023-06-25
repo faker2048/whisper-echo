@@ -8,6 +8,8 @@
 
 These instructions will guide you on how to clone, build, and test this project in your local Nix environment.
 
+## Development
+
 ### Prerequisites
 - [Nix package manager](https://nixos.org/download.html) installed and configured on your system.
 
