@@ -16,8 +16,20 @@ void set_log_level() {
       spdlog::level::to_string_view(spdlog::get_level()));
 }
 
-int main() {
+int main(int argc, char* argv[]) {
   set_log_level();
-  whisper::WhisperContextSingleton::GetSingletonInstance().Init("ggml-base.en.bin");
+
+  std::string model_path;
+
+  if (argc < 2) {
+    std::cerr << "Usage: whisper_echo <model_path>" << std::endl;
+    return 1;
+  }
+
+  model_path = argv[1];
+
+  whisper::WhisperContextSingleton::GetSingletonInstance().Init(model_path);
   whisper::WhisperApp::Builder().Listen("0.0.0.0").SetPort(8008).Build().Run();
+
+  return 0;
 }

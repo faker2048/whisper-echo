@@ -1,8 +1,8 @@
 # whisper_echo
 
-:warning: **The project is currently under active development And can not use yet. Expect frequent updates and changes.**
+:warning: **The project is currently under active development. Expect frequent updates and changes.**
 
-`whisper_echo` is a server service repository, tailored for voice-to-text transcription using the Whisper tool. The service takes in audio data, processes it through the Whisper system, and returns the corresponding text transcription. The service is implemented in C++, specifically designed for Nix environments.
+`whisper_echo` is a server service repository, tailored for voice-to-text transcription using the whisper-cpp. The service takes in audio data, processes it through the Whisper system, and returns the corresponding text transcription. Implemented in C++, specifically designed for Nix environments.
 
 ## Getting Started
 
@@ -31,9 +31,17 @@ make
 
 Upon successful build, the resulting binary can be found in the `build` directory.
 
+### Run
+
+```bash whisper_echo
+./bin/whisper_echo ./models/ggml-base.en.bin
+```
+
+Instead `./models/ggml-base.en.bin` use your own model_path
+
 ## Running the tests
 
-Explain how to run the automated tests for this system.
+TODO
 
 ## Contributing
 
