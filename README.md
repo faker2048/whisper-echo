@@ -1,5 +1,6 @@
 # whisper_echo
-![111](https://github.com/faker2048/whisper_echo/assets/85467181/e334d768-fe81-49e9-8106-8563371b88f5)
+![image](https://github.com/faker2048/whisper_echo/assets/85467181/51099d4e-78e2-40fa-8eaa-8239715bb78e)
+
 
 :warning: **The project is currently under active development. Expect frequent updates and changes.**
 
