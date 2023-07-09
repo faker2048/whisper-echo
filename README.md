@@ -47,14 +47,7 @@ Instead `./models/ggml-base.en.bin` use your own model_path
 
 Here is a usable Python version of the client example. Run `nix develop` to enter the Python environment, and then execute `python ./whisper_echo/examples/py_client/client.py --file path/to/your_audio.wav`.
 
-## Running the tests
-
-TODO
-
-## Contributing
-
-TODO
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the MIT License.
