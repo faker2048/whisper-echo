@@ -1,4 +1,4 @@
-#include "whisper_echo/whisper_context.h"
+#include "whisper_echo/model/whisper_context.h"
 
 #include <iostream>
 

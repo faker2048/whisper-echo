@@ -4,7 +4,7 @@
 #include "spdlog/spdlog.h"
 #include "whisper_echo/websocket/whisper_app.h"
 #include "whisper_echo/websocket/whisper_websocket_controller.h"
-#include "whisper_echo/whisper_context.h"
+#include "whisper_echo/model/whisper_context.h"
 
 // set log level debug
 void set_log_level() {

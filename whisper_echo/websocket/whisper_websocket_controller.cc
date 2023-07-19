@@ -8,7 +8,7 @@
 #include "spdlog/spdlog.h"
 #include "whisper_echo/utlis/id_generator.h"
 #include "whisper_echo/websocket/whisper_app_model_params.h"
-#include "whisper_echo/whisper_context.h"
+#include "whisper_echo/model/whisper_context.h"
 
 namespace whisper {
 

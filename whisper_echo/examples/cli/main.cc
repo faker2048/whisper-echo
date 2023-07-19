@@ -8,7 +8,7 @@
 #include "whisper.h"
 #include "whisper_echo/examples/cli/dr_wav.h"  // TODO: move to third-party
 #include "whisper_echo/examples/cli/whisper_command_line_params.h"
-#include "whisper_echo/whisper_context.h"
+#include "whisper_echo/model/whisper_context.h"
 
 using whisper::WhisperCommandLineParams;
 using whisper::WhisperContext;
