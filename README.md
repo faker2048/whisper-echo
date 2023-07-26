@@ -1,4 +1,4 @@
-# whisper_echo
+# Whisper websocket server
 ![image](https://github.com/faker2048/whisper_echo/assets/85467181/51099d4e-78e2-40fa-8eaa-8239715bb78e)
 
 
