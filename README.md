@@ -1,8 +1,5 @@
 # Whisper websocket server
-![image](https://github.com/faker2048/whisper_echo/assets/85467181/51099d4e-78e2-40fa-8eaa-8239715bb78e)
 
-
-:warning: **The project is currently under active development. Expect frequent updates and changes.**
 
 `whisper_echo` is a server service repository, tailored for voice-to-text transcription using the whisper-cpp. The service takes in audio data, processes it through the Whisper system, and returns the corresponding text transcription. Implemented in C++, specifically designed for Nix environments.
 
