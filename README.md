@@ -1,7 +1,7 @@
 # Whisper websocket server
 
 
-`whisper_echo` is a server service repository, tailored for voice-to-text transcription using the whisper-cpp. The service takes in audio data, processes it through the Whisper system, and returns the corresponding text transcription. Implemented in C++, specifically designed for Nix environments.
+`whisper_echo` is a server service repository, tailored for voice-to-text transcription using the whisper-cpp. The service takes in audio data, processes it through the Whisper system, and returns the corresponding text transcription. Implemented in C++20, specifically designed for Nix environments.
 
 ## Getting Started
 
